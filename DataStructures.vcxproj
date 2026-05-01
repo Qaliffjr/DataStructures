@@ -127,11 +127,19 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="CSVLoader.cpp" />
+    <ClCompile Include="CSVLoader.hpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="dataArray.hpp" />
-    <ClInclude Include="dataLinkedList.hpp" />
+    <ClInclude Include="record.hpp" />
+    <ClInclude Include="recordArray.hpp" />
+    <ClInclude Include="recordLinkedList.hpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="dataset1-cityA.csv" />
+    <None Include="dataset2-cityB.csv" />
+    <None Include="dataset3-cityC.csv" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

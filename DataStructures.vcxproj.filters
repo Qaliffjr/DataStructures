@@ -18,13 +18,33 @@
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="CSVLoader.hpp">
+      <Filter>Header Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CSVLoader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="dataLinkedList.hpp">
+    <ClInclude Include="record.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="dataArray.hpp">
+    <ClInclude Include="recordArray.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="recordLinkedList.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="dataset1-cityA.csv">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="dataset2-cityB.csv">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="dataset3-cityC.csv">
+      <Filter>Source Files</Filter>
+    </None>
   </ItemGroup>
 </Project>
