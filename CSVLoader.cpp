@@ -70,6 +70,9 @@ void loadCSV(const string& filename, RecordArray& arr, RecordLinkedList& list) {
         getline(ss, temp, ',');
         record.monthlyFrequency = stoi(temp);
 
+		//Monthly Carbon Emission
+		record.monthlyCarbonEmission = record.dailyDistance * record.carbonEmission * record.monthlyFrequency;
+
 
 		//Insert the record into both the array and linked list
         if (arr.size < arr.capacity) {

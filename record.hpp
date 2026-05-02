@@ -6,6 +6,7 @@ struct Record {
     int Age;
     std::string modeOfTransport;
     int dailyDistance;
-    float carbonEmission;
+    double carbonEmission;
     int monthlyFrequency;
+    double monthlyCarbonEmission;
 };
