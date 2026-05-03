@@ -1,12 +1,12 @@
 #pragma once
 #include <string>
-using namespace std;
 
 struct Resident {
+    std::string ID;
+    int Age;
+    std::string modeOfTransport;
+    double dailyDistance;
+    double carbonEmissionFactor;
+    int averageDayPerMonth;
+    double monthlyCarbonEmission;
 };
-
-// Function prototypes
-int readCSV(const string& filename, Resident residents[], int maxSize);
-void analyzeAgeGroup(Resident residents[], int size, int minAge, int maxAge, const string& groupName);
-
-#endif

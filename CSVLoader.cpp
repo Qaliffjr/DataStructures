@@ -1,4 +1,5 @@
 #include "CSVLoader.hpp"
+#include "Resident.hpp"
 #include <fstream>
 #include <sstream>
 #include <iostream>
@@ -64,14 +65,13 @@ void loadCSV(const string& filename, ResidentArray& arr, ResidentLinkedList& lis
 
         //Carbon Emission Factor
         getline(ss, temp, ',');
-        Resident.carbonEmission = stof(temp);
+        Resident.carbonEmissionFactor = stod(temp);
 
         //Monthly Frequency
         getline(ss, temp, ',');
-        Resident.monthlyFrequency = stoi(temp);
-
+        Resident.averageDayPerMonth = stoi(temp);
         //Monthly Carbon Emission
-        Resident.monthlyCarbonEmission = Resident.dailyDistance * Resident.carbonEmission * Resident.monthlyFrequency;
+        Resident.monthlyCarbonEmission = Resident.dailyDistance * Resident.carbonEmissionFactor * Resident.averageDayPerMonth;
 
 
         //=====================================================
