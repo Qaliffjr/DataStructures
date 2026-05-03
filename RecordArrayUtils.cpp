@@ -1,6 +1,7 @@
 #include "RecordArrayUtils.hpp"
 #include "CSVLoader.hpp"
 
+#include <cstring>
 #include <iostream>
 
 void initRecordArray(RecordArray& arr, int capacity) {
@@ -72,6 +73,85 @@ bool loadDataset(
     }
 
     return true;
+}
+
+void recordToResident(const Record& r, Resident& out) {
+    out = Resident{};
+#if defined(_MSC_VER)
+    strncpy_s(out.residentID, sizeof(out.residentID), r.ID.c_str(), _TRUNCATE);
+    strncpy_s(out.transportMode, sizeof(out.transportMode), r.modeOfTransport.c_str(), _TRUNCATE);
+#else
+    std::strncpy(out.residentID, r.ID.c_str(), sizeof(out.residentID) - 1);
+    out.residentID[sizeof(out.residentID) - 1] = '\0';
+    std::strncpy(out.transportMode, r.modeOfTransport.c_str(), sizeof(out.transportMode) - 1);
+    out.transportMode[sizeof(out.transportMode) - 1] = '\0';
+#endif
+    out.age = r.Age;
+    out.dailyDistance = r.dailyDistance;
+    out.emissionFactor = r.carbonEmission;
+    out.averageDaysPerMonth = r.monthlyFrequency;
+    out.monthlyEmissions = r.monthlyCarbonEmission;
+}
+
+void displayArrayPreview(const RecordArray& records, int limit) {
+    const int n = records.size;
+    const int count = (limit < n) ? limit : n;
+
+    for (int i = 0; i < count; ++i) {
+        const Record& r = records.arr[i];
+        std::cout << i << ": ID=" << r.ID << " Age=" << r.Age
+            << " mode=" << r.modeOfTransport
+            << " dailyDistance=" << r.dailyDistance
+            << " monthlyCarbonEmission=" << r.monthlyCarbonEmission << '\n';
+    }
+}
+
+void displayLastNRecords(const RecordArray& records, int limit) {
+    const int n = records.size;
+    if (n <= 0 || records.arr == nullptr) {
+        return;
+    }
+    const int count = (limit < n) ? limit : n;
+    const int start = n - count;
+
+    for (int i = start; i < n; ++i) {
+        const Record& r = records.arr[i];
+        std::cout << i << ": ID=" << r.ID << " Age=" << r.Age
+            << " mode=" << r.modeOfTransport
+            << " dailyDistance=" << r.dailyDistance
+            << " monthlyCarbonEmission=" << r.monthlyCarbonEmission << '\n';
+    }
+}
+
+void displayResidentArrayPreview(const ResidentArray& residents, int limit) {
+    const int n = residents.size;
+    if (n <= 0 || residents.data == nullptr) {
+        return;
+    }
+    const int count = (limit < n) ? limit : n;
+    for (int i = 0; i < count; ++i) {
+        const Resident& r = residents.data[i];
+        std::cout << i << ": ID=" << r.residentID << " Age=" << r.age
+            << " mode=" << r.transportMode
+            << " dailyDistance=" << r.dailyDistance
+            << " monthlyEmissions=" << r.monthlyEmissions << '\n';
+    }
+}
+
+void displayResidentArrayLastN(const ResidentArray& residents, int limit) {
+    const int n = residents.size;
+    if (n <= 0 || residents.data == nullptr) {
+        return;
+    }
+    const int count = (limit < n) ? limit : n;
+    const int start = n - count;
+    for (int i = start; i < n; ++i) {
+        const Resident& r = residents.data[i];
+        std::cout << i << ": ID=" << r.residentID << " Age=" << r.age
+            << " mode=" << r.transportMode
+            << " dailyDistance=" << r.dailyDistance
+            << " monthlyEmissions=" << r.monthlyEmissions << '\n';
+    }
 }
 
 RecordArray combineArrays(
