@@ -4,6 +4,7 @@
 #include <string>
 #include "recordArray.hpp"
 #include "recordLinkedList.hpp"
+#include "ResidentArray.hpp"
 
 void initRecordArray(RecordArray& arr, int capacity);
 void freeRecordArray(RecordArray& arr);
@@ -23,5 +24,12 @@ RecordArray combineArrays(
     const RecordArray& b,
     const RecordArray& c
 );
+
+void recordToResident(const Record& r, Resident& out);
+
+void displayArrayPreview(const RecordArray& records, int limit);
+void displayLastNRecords(const RecordArray& records, int limit);
+void displayResidentArrayPreview(const ResidentArray& residents, int limit);
+void displayResidentArrayLastN(const ResidentArray& residents, int limit);
 
 #endif
