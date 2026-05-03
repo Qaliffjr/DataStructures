@@ -186,7 +186,7 @@ void binarySearchByAge(const RecordArray& records, int minAge, int maxAge) {
     std::cout << "Total in range: " << count << '\n';
 }
 
-void binarySearchByDistance(const RecordArray& records, int minDistanceExclusive) {
+void binarySearchByDistance(const RecordArray& records, double minDistanceExclusive) {
     const int n = records.size;
     std::cout << "\n--- binarySearchByDistance (sorted by daily distance) ---\n";
     std::cout << "Query: dailyDistance > " << minDistanceExclusive << '\n';
