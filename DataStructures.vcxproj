@@ -42,7 +42,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v143</PlatformToolset>
+    <PlatformToolset>v145</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
@@ -127,18 +127,27 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="ArrayMain.cpp" />
     <ClCompile Include="CSVLoader.cpp" />
-    <ClCompile Include="CSVLoader.hpp" />
-    <ClCompile Include="LinkedList.cpp" />
+    <ClCompile Include="dataStore.cpp" />
+    <ClCompile Include="ResidentArray.cpp" />
+    <ClCompile Include="ResidentArrayUtils.cpp" />
+    <ClCompile Include="ResidentLinkedList.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="SearchSortedList.cpp" />
+    <ClCompile Include="menu.cpp" />
+    <ClCompile Include="SortedArraySort.cpp" />
+    <ClCompile Include="tableDisplay.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="LinkedList.hpp" />
-    <ClInclude Include="record.hpp" />
-    <ClInclude Include="recordArray.hpp" />
-    <ClInclude Include="recordLinkedList.hpp" />
-    <ClInclude Include="SearchSortedList.hpp" />
+    <ClInclude Include="CSVLoader.hpp" />
+    <ClInclude Include="dataStore.hpp" />
+    <ClInclude Include="menu.hpp" />
+    <ClInclude Include="ResidentArrayUtils.hpp" />
+    <ClInclude Include="Resident.hpp" />
+    <ClInclude Include="ResidentArray.hpp" />
+    <ClInclude Include="ResidentLinkedList.hpp" />
+    <ClInclude Include="SortedArraySort.hpp" />
+    <ClInclude Include="tableDisplay.hpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="dataset1-cityA.csv" />

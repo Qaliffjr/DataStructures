@@ -30,6 +30,7 @@ void printTable(
     }
 
     // Header
+	cout << "\n";
     printSeparator(totalWidth);
     printRow(headers, widths, headerCount);
     printSeparator(totalWidth, '-');

@@ -1,5 +1,5 @@
-#ifndef RECORDARRAY_HPP
-#define RECORDARRAY_HPP
+#ifndef RESIDENT_ARRAY_HPP
+#define RESIDENT_ARRAY_HPP
 
 #pragma once
 #include <string>
@@ -20,7 +20,7 @@ const int MAX_RESIDENTS = 300;
 
 const int         NUM_MODES = 6;
 const std::string MODES[NUM_MODES] = {
-    "Car", "Bus", "Bicycle", "Walking", "School Bus", "Carpool"
+    "Bicycle", "Bus", "Car", "Carpool", "School Bus", "Walking"
 };
 
 const int         NUM_AGE_GROUPS = 5;
@@ -34,17 +34,28 @@ const std::string AGE_LABEL[NUM_AGE_GROUPS] = {
     "Senior Citizens / Retirees (61-100)"
 };
 
+
 // ============================================================
-//  Function prototypes
+//  Functions
 // ============================================================
-Resident* recategorizeByAgeGroup(Resident residents[], int size, int ageGroup, int& newSize);
+// UNSORTED ARRAY FUNCTIONS
 void analyzeAllAgeGroups(Resident residents[], int size, const std::string& datasetName);
 
-void searchByAgeGroup(Resident residents[], int size, int groupIndex);
-void searchByTransport(Resident residents[], int size, const std::string& mode);
-void searchByDistance(Resident residents[], int size, double threshold);
+ResidentArray searchByAgeGroup(const ResidentArray& input, int groupIndex);
+ResidentArray searchByTransport(const ResidentArray& input, const std::string& mode);
+ResidentArray searchByDistance(const ResidentArray& input, double minDistance, double maxDistance);
+ResidentArray searchByEmission(const ResidentArray& input, double threshold);
+
+// SORTED ARRAY FUNCTIONS
+void binarySearchByAge(const ResidentArray& resident, int minAge, int maxAge);
+
+void binarySearchByDistance(const ResidentArray& resident, double minDistanceExclusive);
+
+void binarySearchByEmission(const ResidentArray& resident, double emissionThreshold);
 
 
-void deleteResidentArray(ResidentArray& arr);
+
+// UTILITY FUNCTIONS
+void printResidentArray(const ResidentArray& arr);
 
 #endif

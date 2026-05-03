@@ -18,22 +18,13 @@
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="CSVLoader.hpp">
-      <Filter>Header Files</Filter>
-    </ClCompile>
-    <ClCompile Include="LinkedListMain.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="menu.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="linearSearch.cpp">
+    <ClCompile Include="ResidentLinkedList.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ArrayMain.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ResidentArray.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="dataStore.cpp">
@@ -42,13 +33,16 @@
     <ClCompile Include="tableDisplay.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="SortedArraySort.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="CSVLoader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="LinkedList.cpp">
+    <ClCompile Include="ResidentArray.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="SearchSortedList.cpp">
+    <ClCompile Include="ResidentArrayUtils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -62,12 +56,6 @@
     <ClInclude Include="ResidentLinkedList.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="linearSearch.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="LinkedList.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="menu.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -77,10 +65,13 @@
     <ClInclude Include="tableDisplay.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="LinkedList.hpp">
+    <ClInclude Include="SortedArraySort.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="SearchSortedList.hpp">
+    <ClInclude Include="ResidentArrayUtils.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CSVLoader.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
