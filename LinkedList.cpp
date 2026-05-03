@@ -1,4 +1,5 @@
 #include "LinkedList.hpp"
+#include "ResidentLinkedList.hpp"
 #include <iostream>
 using namespace std;
 
@@ -12,6 +13,9 @@ bool isSmaller(Node* a, Node* b, int sortBy) {
 	}
 	else if (sortBy == 3) {
 		return a->data.carbonEmissionFactor < b->data.carbonEmissionFactor;
+	}
+	else if(sortBy == 4){
+		return a->data.modeOfTransport < b->data.modeOfTransport;
 	}
 	//when a bigger than b
 	else{

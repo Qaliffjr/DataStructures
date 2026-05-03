@@ -2,7 +2,7 @@
 #ifndef LINKEDLIST_HPP
 #define LINKEDLIST_HPP
 #include "CSVLoader.hpp" 
-#include "recordLinkedList.hpp" 
+#include "ResidentLinkedList.hpp" 
 
 void sortList(Node*& head, int sortBy);
 void sortedInsert(Node*& sortedHead, Node* newNode, int sortBy);

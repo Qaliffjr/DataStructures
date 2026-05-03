@@ -1,6 +1,6 @@
 #include "LinkedList.hpp"
 #include "SearchSortedList.hpp"
-#include "recordLinkedList.hpp"
+#include "ResidentLinkedList.hpp"
 
 #include <iostream>
 using namespace std;
@@ -71,26 +71,38 @@ void runSearch(Node* head) {
         }
 
     }
-    //else if (searchChoice == 3) {
-    //    //mode selection
-    //    cout << "Transport Mode:" << endl;
-    //    cout << "1. Bicycle" << endl;
-    //    cout << "2. Walking" << endl;
-    //    cout << "3. School Bus" << endl;
-    //    cout << "4. Carpool" << endl;
-    //    cout << "5. Bus" << endl;
-    //    cout << "6. Car" << endl;
+    else if (searchChoice == 3) {
+        //mode selection
+        cout << "Transport Mode:" << endl;
+        cout << "1. Bicycle" << endl;
+        cout << "2. Walking" << endl;
+        cout << "3. School Bus" << endl;
+        cout << "4. Carpool" << endl;
+        cout << "5. Bus" << endl;
+        cout << "6. Car" << endl;
 
-    //    int mode;
-    //    cin >> mode;
+        int mode;
+        cin >> mode;
 
-    //    if (mode == 1) searchByTransport(head, "Bicycle");
-    //    else if (mode == 2) searchByTransport(head, "Walking");
-    //    else if (mode == 3) searchByTransport(head, "School Bus");
-    //    else if (mode == 4) searchByTransport(head, "Carpool");
-    //    else if (mode == 5) searchByTransport(head, "Bus");
-    //    else if (mode == 6) searchByTransport(head, "Car");
-    //}
+        if (mode == 1) {
+            searchByTransport(head, "Bicycle");
+		}
+        else if (mode == 2) {
+            searchByTransport(head, "Walking");
+		}
+        else if (mode == 3) {
+            searchByTransport(head, "School Bus");
+		}
+        else if (mode == 4) {
+            searchByTransport(head, "Carpool");
+		}
+        else if (mode == 5) {
+            searchByTransport(head, "Bus");
+		}
+        else if (mode == 6) {
+            searchByTransport(head, "Car");
+        }
+    }
 }
 
 
@@ -200,10 +212,29 @@ void searchByDistance(Node* head, int minDist, int maxDist) {
 }
 
 
-//// ============================================================
-//// Search by Transport Mode
-//// ============================================================
-////bicycle, walking, school bus, carpool, bus, car
-//void searchByTransport(Node* head, const string& mode) {
-//	//
-//}
+// ============================================================
+// Search by Transport Mode
+// ============================================================
+//bicycle, walking, school bus, carpool, bus, car
+void searchByTransport(Node* head, const string& mode) {
+    sortList(head, 4);
+
+    cout << "--- Transport: " << mode << " ---" << endl;
+    
+    int count = 0;
+    Node* current = head;
+    
+    while (current != nullptr) {
+        if (current->data.modeOfTransport == mode) {
+            cout << "ID: " << current->data.ID << endl;
+            cout << "Age: " << current->data.Age << endl;
+            cout << "Transport: " << current->data.modeOfTransport << endl;
+            cout << "Distance: " << current->data.dailyDistance << endl;
+            cout << "Carbon: " << current->data.carbonEmissionFactor << endl;
+            cout << "----------------------------" << endl;
+            count++;
+        }
+        current = current->next;
+    }
+    cout << "Total: " << count << " records" << endl;
+}
