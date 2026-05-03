@@ -159,7 +159,7 @@ void searchByAge(Node* head, int minAge, int maxAge) {
         cout << "Age: " << current->data.Age << endl;
         cout << "Transport: " << current->data.modeOfTransport << endl;
         cout << "Distance: " << current->data.dailyDistance << endl;
-        cout << "Carbon: " << current->data.carbonEmission << endl;
+        cout << "Carbon: " << current->data.carbonEmissionFactor << endl;
         cout << "----------------------------" << endl;
         count++;
         current = current->next;
@@ -190,7 +190,7 @@ void searchByDistance(Node* head, int minDist, int maxDist) {
         cout << "Age: " << current->data.Age << endl;
         cout << "Transport: " << current->data.modeOfTransport << endl;
         cout << "Distance: " << current->data.dailyDistance << endl;
-        cout << "Carbon: " << current->data.carbonEmission << endl;
+        cout << "Carbon: " << current->data.carbonEmissionFactor << endl;
         cout << "----------------------------" << endl;
         count++;
         current = current->next;

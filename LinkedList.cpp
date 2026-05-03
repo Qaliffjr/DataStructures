@@ -11,7 +11,7 @@ bool isSmaller(Node* a, Node* b, int sortBy) {
 		return a->data.dailyDistance < b->data.dailyDistance;
 	}
 	else if (sortBy == 3) {
-		return a->data.carbonEmission < b->data.carbonEmission;
+		return a->data.carbonEmissionFactor < b->data.carbonEmissionFactor;
 	}
 	//when a bigger than b
 	else{
@@ -71,8 +71,8 @@ void displayList(Node* head) {
 		cout << "Age: " << current->data.Age << endl;
 		cout << "Mode of Transport: " << current->data.modeOfTransport << endl;
 		cout << "Daily Distance: " << current->data.dailyDistance << endl;
-		cout << "Carbon Emission: " << current->data.carbonEmission << endl;
-		cout << "Monthly Frequency: " << current->data.monthlyFrequency << endl;
+		cout << "Carbon Emission: " << current->data.carbonEmissionFactor << endl;
+		cout << "Monthly Frequency: " << current->data.monthlyCarbonEmission << endl;
 		cout << "Monthly Carbon Emission: " << current->data.monthlyCarbonEmission << endl;
 		current = current->next;
 		count++;
