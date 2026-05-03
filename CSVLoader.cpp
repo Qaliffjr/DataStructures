@@ -60,7 +60,7 @@ void loadCSV(const string& filename, RecordArray& arr, RecordLinkedList& list) {
 
         //Daily Distance
         getline(ss, temp, ',');
-        record.dailyDistance = stoi(temp);
+        record.dailyDistance = stod(temp); //change from stoi to stod
 
         //Carbon Emission Factor
         getline(ss, temp, ',');
