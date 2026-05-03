@@ -1,5 +1,4 @@
 #include "CSVLoader.hpp"
-#include "Resident.hpp"
 #include <fstream>
 #include <sstream>
 #include <iostream>

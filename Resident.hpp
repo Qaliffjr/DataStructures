@@ -1,3 +1,6 @@
+#ifndef RESIDENT_HPP
+#define RESIDENT_HPP
+
 #pragma once
 #include <string>
 
@@ -10,3 +13,5 @@ struct Resident {
     int averageDayPerMonth;
     double monthlyCarbonEmission;
 };
+
+#endif

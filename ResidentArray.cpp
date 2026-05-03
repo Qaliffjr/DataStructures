@@ -1,12 +1,11 @@
 #define _HAS_STD_BYTE 0
 
 #include "ResidentArray.hpp"
+#include "ResidentArrayUtils.hpp"
+#include "tableDisplay.hpp"
 #include <chrono>
 #include <iostream>
-#include <fstream>
-#include <sstream>
 #include <iomanip>
-#include "tableDisplay.hpp"
 using namespace std;
 
 // ============================================================
@@ -19,6 +18,10 @@ struct result {
     double avgEmission;
     int count;
 };
+
+
+
+
 // ============================================================
 //  TASK 4 - Age Group Analysis
 //  Linear search through unsorted array for each age group.
@@ -28,43 +31,43 @@ struct result {
 
 void analyzeAllAgeGroups(Resident residents[], int size, const string& datasetName) {
 
-    cout << "\n";
+    cout << "\n\n\n";
     printSeparator(72);
-    cout << "  AGE GROUP ANALYSIS  |  Dataset: " << datasetName << "\n";
-    printSeparator(72);
+    cout << "AGE GROUP ANALYSIS  |  Dataset: " << datasetName << "\n";
 
     //Prepare Table
     const int COLS = 5;
 
     std::string headers[COLS] = {
         "Category",
-        "Preferred Mode of Transport",
+        "Preferred Transport Mode",
         "Total Carbon Emission",
-        "Average Emission per Resident",
+        "Average Emission",
         "Number of Resident"
     };
 
     int widths[COLS] = {
     50,  // Category
-    28,  // Preferred Mode
-    22,  // Total Emission
-    30,  // Avg Emission
+    30,  // Preferred Mode
+    24,  // Total Emission
+    24,  // Avg Emission
     20   // Number of Resident
     };
     std::string rows[5][10];
     int rowCount = 0;
     int groupCount = 0;
 
+    auto programStart = chrono::high_resolution_clock::now();
+
     for (int g = 0; g < NUM_AGE_GROUPS; g++) {
         rowCount++;
-        int groupCount = 0;
+        groupCount = 0;
         double totalEmission = 0.0;
         int modeCnt[NUM_MODES] = {};
 
         int minAge = AGE_MIN[g];
         int maxAge = AGE_MAX[g];
 
-        auto programStart = chrono::high_resolution_clock::now();
         // =========================
         // Linear search (unsorted array)
         // =========================
@@ -72,7 +75,6 @@ void analyzeAllAgeGroups(Resident residents[], int size, const string& datasetNa
 
             if (residents[i].Age >= minAge &&
                 residents[i].Age <= maxAge) {
-
                 double em = residents[i].monthlyCarbonEmission;
                 totalEmission += em;
                 groupCount++;
@@ -86,11 +88,6 @@ void analyzeAllAgeGroups(Resident residents[], int size, const string& datasetNa
                 }
             }
         }
-        if (groupCount == 0) {
-            cout << "  No residents found in this age group.\n";
-            return;
-        }
-
         // =========================
         // Find most preferred mode
         // =========================
@@ -100,133 +97,174 @@ void analyzeAllAgeGroups(Resident residents[], int size, const string& datasetNa
                 bestMode = m;
             }
         }
-        auto programEnd = chrono::high_resolution_clock::now();
-        chrono::duration<double, milli> elapsed = programEnd - programStart;
-
         // Insert into Table
-        rows[rowCount][0] = AGE_LABEL[g];
-        rows[rowCount][1] = MODES[bestMode];
-        rows[rowCount][2] = totalEmission;
-        rows[rowCount][3] = totalEmission / groupCount;
-        rows[rowCount][4] = std::to_string(groupCount);
-        rowCount++;
+        rows[g][0] = AGE_LABEL[g];
+        rows[g][1] = MODES[bestMode];
+        rows[g][2] = to_string(totalEmission);
+        double avg = (groupCount == 0) ? 0 : (totalEmission / groupCount);
+        rows[g][3] = to_string(avg);
+        rows[g][4] = std::to_string(groupCount);
     }
     printTable(headers, COLS, rows, rowCount, widths);
+    auto programEnd = chrono::high_resolution_clock::now();
+    chrono::duration<double, milli> elapsed = programEnd - programStart;
+	std::cout << "[Process time: " << fixed << setprecision(4) << elapsed.count() << " ms]\n";
 }
 
-// ============================================================
-//  TASK 7a - Search by Age Group (linear search)
-// ============================================================
-void searchByAgeGroup(Resident residents[], int size, int groupIndex) {
+
+
+// Unsorted Search (Linear Search)
+ResidentArray searchByAgeGroup(const ResidentArray& input, int groupIndex) {
+    ResidentArray result;
+
+    // handle invalid group
     if (groupIndex < 0 || groupIndex >= NUM_AGE_GROUPS) {
-        cout << "[ERROR] Invalid age group selection.\n";
-        return;
+        initResidentArray(result, 1);
+        return result;
     }
 
-    cout << "\n";
-    printSeparator(72);
-    cout << "  SEARCH BY AGE GROUP\n";
-    cout << "  Group : " << AGE_LABEL[groupIndex] << "\n";
-    printSeparator(72);
-    cout << left
-        << setw(10) << "ID"
-        << setw(6) << "Age"
-        << setw(14) << "Transport"
-        << setw(12) << "Dist (km)"
-        << setw(8) << "Days"
-        << setw(16) << "Emission (kg)"
-        << "\n";
-    printSeparator(72);
+    // start with small capacity (like empty list growing)
+    initResidentArray(result, 2);
 
-    int found = 0;
-    for (int i = 0; i < size; i++) {
-        if (residents[i].Age >= AGE_MIN[groupIndex] &&
-            residents[i].Age <= AGE_MAX[groupIndex]) {
-            cout << left
-                << setw(10) << residents[i].ID
-                << setw(6) << residents[i].Age
-                << setw(14) << residents[i].modeOfTransport
-                << setw(12) << fixed << setprecision(1) << residents[i].dailyDistance
-                << setw(8) << residents[i].monthlyFrequency
-                << setw(16) << residents[i].monthlyCarbonEmission
-                << "\n";
-            found++;
+    int minAge = AGE_MIN[groupIndex];
+    int maxAge = AGE_MAX[groupIndex];
+
+    for (int i = 0; i < input.size; i++) {
+        int age = input.arr[i].Age;
+
+        if (age >= minAge && age <= maxAge) {
+
+            // resize if full (like list automatically growing)
+            if (result.size == result.capacity) {
+                int newCap = result.capacity * 2;
+
+                Resident* newArr = new Resident[newCap];
+
+                for (int j = 0; j < result.size; j++) {
+                    newArr[j] = result.arr[j];
+                }
+
+                delete[] result.arr;
+                result.arr = newArr;
+                result.capacity = newCap;
+            }
+
+            // insert (equivalent to insertBack)
+            result.arr[result.size++] = input.arr[i];
         }
     }
 
-    printSeparator(72);
-    cout << "  Records found: " << found << "\n";
+    return result;
+}
+ResidentArray searchByTransport(const ResidentArray& input, const string& mode) {
+    ResidentArray result;
+
+    // start small (like linked list growing)
+    initResidentArray(result, 2);
+
+    for (int i = 0; i < input.size; i++) {
+        if (input.arr[i].modeOfTransport == mode) {
+
+            // resize if full
+            if (result.size == result.capacity) {
+                int newCap = result.capacity * 2;
+
+                Resident* newArr = new Resident[newCap];
+
+                for (int j = 0; j < result.size; j++) {
+                    newArr[j] = result.arr[j];
+                }
+
+                delete[] result.arr;
+                result.arr = newArr;
+                result.capacity = newCap;
+            }
+
+            // insert (same idea as insertBack)
+            result.arr[result.size++] = input.arr[i];
+        }
+    }
+
+    return result;
 }
 
-// ============================================================
-//  TASK 7b - Search by Transport Mode (linear search)
-// ============================================================
-void searchByTransport(Resident residents[], int size, const string& mode) {
-    cout << "\n";
-    printSeparator(72);
-    cout << "  SEARCH BY TRANSPORT MODE\n";
-    cout << "  Mode : " << mode << "\n";
-    printSeparator(72);
-    cout << left
-        << setw(10) << "ID"
-        << setw(6) << "Age"
-        << setw(12) << "Dist (km)"
-        << setw(8) << "Days"
-        << setw(16) << "Emission (kg)"
-        << "\n";
-    printSeparator(72);
+ResidentArray searchByDistance(const ResidentArray& input, double minDistance, double maxDistance) {
+    ResidentArray result;
 
-    int found = 0;
-    for (int i = 0; i < size; i++) {
-        if (residents[i].modeOfTransport == mode) {
-            cout << left
-                << setw(10) << residents[i].ID
-                << setw(6) << residents[i].Age
-                << setw(12) << fixed << setprecision(1) << residents[i].dailyDistance
-                << setw(8) << residents[i].monthlyFrequency
-                << setw(16) << residents[i].monthlyCarbonEmission
-                << "\n";
-            found++;
+    // start small like a growing list
+    initResidentArray(result, 2);
+
+    for (int i = 0; i < input.size; i++) {
+        if (input.arr[i].dailyDistance > minDistance && 
+            input.arr[i].dailyDistance < maxDistance) {
+
+            // resize if full
+            if (result.size == result.capacity) {
+                int newCap = result.capacity * 2;
+
+                Resident* newArr = new Resident[newCap];
+
+                for (int j = 0; j < result.size; j++) {
+                    newArr[j] = result.arr[j];
+                }
+
+                delete[] result.arr;
+                result.arr = newArr;
+                result.capacity = newCap;
+            }
+
+            // insert (same pattern as insertBack)
+            result.arr[result.size++] = input.arr[i];
         }
     }
 
-    printSeparator(72);
-    cout << "  Records found: " << found << "\n";
+    return result;
 }
 
-// ============================================================
-//  TASK 7c - Search by Daily Distance Threshold (linear search)
-// ============================================================
-void searchByDistance(Resident residents[], int size, double threshold) {
-    cout << "\n";
-    printSeparator(72);
-    cout << "  SEARCH BY DAILY DISTANCE THRESHOLD\n";
-    cout << "  Showing residents with daily distance > "
-        << fixed << setprecision(1) << threshold << " km\n";
-    printSeparator(72);
-    cout << left
-        << setw(10) << "ID"
-        << setw(6) << "Age"
-        << setw(14) << "Transport"
-        << setw(12) << "Dist (km)"
-        << setw(16) << "Emission (kg)"
-        << "\n";
-    printSeparator(72);
+ResidentArray searchByEmission(const ResidentArray& input, double threshold) {
+    ResidentArray result;
 
-    int found = 0;
-    for (int i = 0; i < size; i++) {
-        if (residents[i].dailyDistance > threshold) {
-            cout << left
-                << setw(10) << residents[i].ID
-                << setw(6) << residents[i].Age
-                << setw(14) << residents[i].modeOfTransport
-                << setw(12) << fixed << setprecision(1) << residents[i].dailyDistance
-                << setw(16) << residents[i].monthlyCarbonEmission
-                << "\n";
-            found++;
+    // start small like dynamic growth
+    initResidentArray(result, 2);
+
+    for (int i = 0; i < input.size; i++) {
+        if (input.arr[i].monthlyCarbonEmission > threshold) {
+
+            // resize if full
+            if (result.size == result.capacity) {
+                int newCap = result.capacity * 2;
+
+                Resident* newArr = new Resident[newCap];
+
+                for (int j = 0; j < result.size; j++) {
+                    newArr[j] = result.arr[j];
+                }
+
+				//Delete old array and update to new array and capacity
+                delete[] result.arr;
+                result.arr = newArr;
+                result.capacity = newCap;
+            }
+
+            // insert
+            result.arr[result.size++] = input.arr[i];
         }
     }
 
-    printSeparator(72);
-    cout << "  Records found: " << found << "\n";
+    return result;
+}
+
+void printResidentArray(const ResidentArray& arr) {
+    const int n = arr.size;
+    for (int i = 0; i < 10; i++) {
+        const Resident& r = arr.arr[i];
+        cout << left
+            << setw(4) << i << "  "
+            << setw(8) << r.ID
+            << setw(6) << r.Age
+            << setw(16) << r.modeOfTransport
+            << setw(14) << fixed << setprecision(1) << r.dailyDistance
+            << setw(20) << fixed << setprecision(2) << r.monthlyCarbonEmission
+            << "\n";
+    }
 }
