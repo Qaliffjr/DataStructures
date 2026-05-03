@@ -1,5 +1,7 @@
 #include "SortedArraySort.hpp"
-#include <iostream>
+
+#include "RecordArrayUtils.hpp"
+#include "ResidentArray.hpp"
 
 bool isGreater(const Record& a, const Record& b, int sortBy) {
     switch (sortBy) {
@@ -11,6 +13,9 @@ bool isGreater(const Record& a, const Record& b, int sortBy) {
 
     case SORT_BY_EMISSION:
         return a.monthlyCarbonEmission > b.monthlyCarbonEmission;
+
+    case SORT_BY_MODE:
+        return a.modeOfTransport > b.modeOfTransport;
 
     default:
         return false;
@@ -31,36 +36,6 @@ void insertionSortArray(RecordArray& records, int sortBy) {
         }
 
         arr[i + 1] = key;
-    }
-}
-
-void displayArrayPreview(const RecordArray& records, int limit) {
-    const int n = records.size;
-    const int count = (limit < n) ? limit : n;
-
-    for (int i = 0; i < count; ++i) {
-        const Record& r = records.arr[i];
-
-        std::cout << i << ": Age=" << r.Age
-            << "  dailyDistance=" << r.dailyDistance
-            << "  monthlyCarbonEmission=" << r.monthlyCarbonEmission << '\n';
-    }
-}
-
-void displayLastNRecords(const RecordArray& records, int limit) {
-    const int n = records.size;
-    if (n <= 0 || records.arr == nullptr) {
-        return;
-    }
-    const int count = (limit < n) ? limit : n;
-    const int start = n - count;
-
-    for (int i = start; i < n; ++i) {
-        const Record& r = records.arr[i];
-
-        std::cout << i << ": Age=" << r.Age
-            << "  dailyDistance=" << r.dailyDistance
-            << "  monthlyCarbonEmission=" << r.monthlyCarbonEmission << '\n';
     }
 }
 
@@ -90,6 +65,11 @@ bool validateSorted(const RecordArray& records, int sortBy) {
                 return false;
             }
             break;
+        case SORT_BY_MODE:
+            if (a.modeOfTransport > b.modeOfTransport) {
+                return false;
+            }
+            break;
         default:
             return false;
         }
@@ -97,9 +77,7 @@ bool validateSorted(const RecordArray& records, int sortBy) {
     return true;
 }
 
-namespace {
-
-int lowerBoundFirstAgeAtLeast(const RecordArray& records, int minAge) {
+static int lowerBoundFirstAgeAtLeast(const RecordArray& records, int minAge) {
     const int n = records.size;
     if (n <= 0 || records.arr == nullptr) {
         return 0;
@@ -117,7 +95,25 @@ int lowerBoundFirstAgeAtLeast(const RecordArray& records, int minAge) {
     return lo;
 }
 
-int lowerBoundFirstDistanceGreaterThan(const RecordArray& records, double minDistanceExclusive) {
+static int lowerBoundFirstDistanceAtLeast(const RecordArray& records, double minKmInclusive) {
+    const int n = records.size;
+    if (n <= 0 || records.arr == nullptr) {
+        return 0;
+    }
+    int lo = 0;
+    int hi = n;
+    while (lo < hi) {
+        const int mid = lo + (hi - lo) / 2;
+        if (records.arr[mid].dailyDistance >= minKmInclusive) {
+            hi = mid;
+        } else {
+            lo = mid + 1;
+        }
+    }
+    return lo;
+}
+
+static int lowerBoundFirstDistanceGreaterThan(const RecordArray& records, double minDistanceExclusive) {
     const int n = records.size;
     if (n <= 0 || records.arr == nullptr) {
         return 0;
@@ -135,7 +131,7 @@ int lowerBoundFirstDistanceGreaterThan(const RecordArray& records, double minDis
     return lo;
 }
 
-int lowerBoundFirstEmissionGreaterThan(const RecordArray& records, double threshold) {
+static int lowerBoundFirstModeAtLeast(const RecordArray& records, const std::string& mode) {
     const int n = records.size;
     if (n <= 0 || records.arr == nullptr) {
         return 0;
@@ -144,7 +140,7 @@ int lowerBoundFirstEmissionGreaterThan(const RecordArray& records, double thresh
     int hi = n;
     while (lo < hi) {
         const int mid = lo + (hi - lo) / 2;
-        if (records.arr[mid].monthlyCarbonEmission > threshold) {
+        if (records.arr[mid].modeOfTransport >= mode) {
             hi = mid;
         } else {
             lo = mid + 1;
@@ -153,25 +149,23 @@ int lowerBoundFirstEmissionGreaterThan(const RecordArray& records, double thresh
     return lo;
 }
 
-void printRecordLine(int index, const Record& r) {
-    std::cout << index << ": Age=" << r.Age
-        << "  dailyDistance=" << r.dailyDistance
-        << "  monthlyCarbonEmission=" << r.monthlyCarbonEmission << '\n';
+static bool appendMatch(ResidentArray& out, const Record& r) {
+    Resident tmp{};
+    recordToResident(r, tmp);
+    return pushBack(out, tmp);
 }
 
-}  // namespace
+int binarySearchByAge(const RecordArray& records, int minAge, int maxAge, ResidentArray& out) {
+    clearResidentArray(out);
 
-void binarySearchByAge(const RecordArray& records, int minAge, int maxAge) {
     const int n = records.size;
-    std::cout << "\n--- binarySearchByAge (sorted by age) ---\n";
-    std::cout << "Range: Age >= " << minAge << ", scan while Age <= " << maxAge << '\n';
+    if (n <= 0 || records.arr == nullptr) {
+        return 0;
+    }
 
     const int start = lowerBoundFirstAgeAtLeast(records, minAge);
-    std::cout << "Binary search: first index with Age >= " << minAge << " is " << start << '\n';
-
     if (start >= n) {
-        std::cout << "No records found.\n";
-        return;
+        return 0;
     }
 
     int count = 0;
@@ -180,52 +174,82 @@ void binarySearchByAge(const RecordArray& records, int minAge, int maxAge) {
         if (r.Age > maxAge) {
             break;
         }
-        printRecordLine(i, r);
+        if (!appendMatch(out, r)) {
+            break;
+        }
         ++count;
     }
-    std::cout << "Total in range: " << count << '\n';
+    return count;
 }
 
-void binarySearchByDistance(const RecordArray& records, double minDistanceExclusive) {
+int binarySearchByDistance(const RecordArray& records, double minDistanceExclusive, ResidentArray& out) {
+    clearResidentArray(out);
+
     const int n = records.size;
-    std::cout << "\n--- binarySearchByDistance (sorted by daily distance) ---\n";
-    std::cout << "Query: dailyDistance > " << minDistanceExclusive << '\n';
+    if (n <= 0 || records.arr == nullptr) {
+        return 0;
+    }
 
     const int start = lowerBoundFirstDistanceGreaterThan(records, minDistanceExclusive);
-    std::cout << "Binary search: first index with dailyDistance > " << minDistanceExclusive
-        << " is " << start << '\n';
-
     if (start >= n) {
-        std::cout << "No records found.\n";
-        return;
+        return 0;
     }
 
     int count = 0;
     for (int i = start; i < n; ++i) {
-        printRecordLine(i, records.arr[i]);
+        if (!appendMatch(out, records.arr[i])) {
+            break;
+        }
         ++count;
     }
-    std::cout << "Total with dailyDistance > " << minDistanceExclusive << ": " << count << '\n';
+    return count;
 }
 
-void binarySearchByEmission(const RecordArray& records, double emissionThreshold) {
+int searchByDailyDistanceRange(const RecordArray& records, double minKmInclusive, double maxKmInclusive, ResidentArray& out) {
+    clearResidentArray(out);
+
     const int n = records.size;
-    std::cout << "\n--- binarySearchByEmission (sorted by monthly carbon emission) ---\n";
-    std::cout << "Query: monthlyCarbonEmission > " << emissionThreshold << '\n';
+    if (n <= 0 || records.arr == nullptr) {
+        return 0;
+    }
 
-    const int start = lowerBoundFirstEmissionGreaterThan(records, emissionThreshold);
-    std::cout << "Binary search: first index with monthlyCarbonEmission > " << emissionThreshold
-        << " is " << start << '\n';
-
+    const int start = lowerBoundFirstDistanceAtLeast(records, minKmInclusive);
     if (start >= n) {
-        std::cout << "No records found.\n";
-        return;
+        return 0;
     }
 
     int count = 0;
     for (int i = start; i < n; ++i) {
-        printRecordLine(i, records.arr[i]);
+        if (records.arr[i].dailyDistance > maxKmInclusive) {
+            break;
+        }
+        if (!appendMatch(out, records.arr[i])) {
+            break;
+        }
         ++count;
     }
-    std::cout << "Total with monthlyCarbonEmission > " << emissionThreshold << ": " << count << '\n';
+    return count;
+}
+
+int binarySearchByTransportMode(const RecordArray& records, const std::string& mode, ResidentArray& out) {
+    clearResidentArray(out);
+
+    const int n = records.size;
+    if (n <= 0 || records.arr == nullptr) {
+        return 0;
+    }
+
+    const int start = lowerBoundFirstModeAtLeast(records, mode);
+    if (start >= n || records.arr[start].modeOfTransport != mode) {
+        return 0;
+    }
+
+    int count = 0;
+    for (int i = start; i < n && records.arr[i].modeOfTransport == mode; ++i) {
+        if (!appendMatch(out, records.arr[i])) {
+            break;
+        }
+        ++count;
+    }
+    return count;
 }
