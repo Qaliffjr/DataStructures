@@ -22,41 +22,41 @@ int countLines(const string& filename) {
 }
 
 
-void loadCSV(const string& filename, RecordArray& arr, RecordLinkedList& list) {
+void loadCSV(const string& filename, ResidentArray& arr, ResidentLinkedList& list) {
 
-	//Open the file
+    //Open the file
     ifstream file(filename);
     string line;
 
-	//Error handling for file opening
+    //Error handling for file opening
     if (!file.is_open()) {
         cout << "Error opening file: " << filename << "\n";
         return;
     }
 
-    //Skip header line to not be stored as a record
+    //Skip header line to not be stored as a Resident
     getline(file, line);
 
-	//Read each line of the CSV and parse it into a Record struct then store it in both the array and linked list
+    //Read each line of the CSV and parse it into a Resident struct then store it in both the array and linked list
     while (getline(file, line)) {
 
-		//Skip empty lines
+        //Skip empty lines
         if (line.empty()) continue;
 
         stringstream ss(line);
-		string temp;                //Temporary variable for parsing numeric values as strings before converting them
+        string temp;                //Temporary variable for parsing numeric values as strings before converting them
 
-        Record record;
+        Resident Resident;
 
         //ResidentID
-        getline(ss, record.ID, ',');
+        getline(ss, Resident.ID, ',');
 
         //Age
         getline(ss, temp, ',');
-        record.Age = stoi(temp);
+        Resident.Age = stoi(temp);
 
         //Mode of Transport
-        getline(ss, record.modeOfTransport, ',');
+        getline(ss, Resident.modeOfTransport, ',');
 
         //Daily Distance
         getline(ss, temp, ',');
@@ -64,25 +64,25 @@ void loadCSV(const string& filename, RecordArray& arr, RecordLinkedList& list) {
 
         //Carbon Emission Factor
         getline(ss, temp, ',');
-        record.carbonEmission = stof(temp);
+        Resident.carbonEmission = stof(temp);
 
         //Monthly Frequency
         getline(ss, temp, ',');
-        record.monthlyFrequency = stoi(temp);
+        Resident.monthlyFrequency = stoi(temp);
 
-		//Monthly Carbon Emission
-		record.monthlyCarbonEmission = record.dailyDistance * record.carbonEmission * record.monthlyFrequency;
+        //Monthly Carbon Emission
+        Resident.monthlyCarbonEmission = Resident.dailyDistance * Resident.carbonEmission * Resident.monthlyFrequency;
 
 
-		//Insert the record into both the array and linked list
+        //=====================================================
+        //Insert the Resident into both the array and linked list
+        //1. Array
         if (arr.size < arr.capacity) {
-            arr.arr[arr.size++] = record;
+            arr.arr[arr.size++] = Resident;
         }
 
-        // =========================
-        // 2. INSERT INTO LINKED LIST
-        // =========================
-        Node* newNode = new Node{ record, nullptr };
+        //2. Linked List
+        Node* newNode = new Node{ Resident, nullptr };
 
         if (list.head == nullptr) {
             list.head = list.tail = newNode;

@@ -1,10 +1,10 @@
 #pragma once
 #include <string>
-#include "recordArray.hpp"
-#include "recordLinkedList.hpp"
+#include "ResidentArray.hpp"
+#include "ResidentLinkedList.hpp"
 
 int countLines(const std::string& filename);
 
 void loadCSV(const std::string& filename,
-    RecordArray& arr,
-    RecordLinkedList& list);
+    ResidentArray& arr,
+    ResidentLinkedList& list);

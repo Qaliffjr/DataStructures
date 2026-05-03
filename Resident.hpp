@@ -1,16 +1,8 @@
-#ifndef RESIDENT_HPP
-#define RESIDENT_HPP
-
+#pragma once
 #include <string>
 using namespace std;
 
 struct Resident {
-    string id;
-    int age;
-    string modeOfTransport;
-    double dailyDistance;
-    double carbonEmissionFactor;
-    int averageDayPerMonth;
 };
 
 // Function prototypes
