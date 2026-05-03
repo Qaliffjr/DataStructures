@@ -1,13 +1,13 @@
 #pragma once
 #include <string>
-#include "record.hpp"
+#include "Resident.hpp"
 
 struct Node {
-    Record data;
+    Resident data;
     Node* next;
 };
 
-struct RecordLinkedList {
+struct ResidentLinkedList {
     Node* head;
     Node* tail;
 };

@@ -1,7 +1,7 @@
 #pragma once
 #include <string>
 
-struct Record {
+struct Resident {
     std::string ID;
     int Age;
     std::string modeOfTransport;

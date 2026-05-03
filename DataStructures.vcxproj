@@ -127,14 +127,26 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="ArrayMain.cpp" />
     <ClCompile Include="CSVLoader.cpp" />
     <ClCompile Include="CSVLoader.hpp" />
+    <ClCompile Include="dataStore.cpp" />
+    <ClCompile Include="linearSearch.cpp" />
+    <ClCompile Include="LinkedListMain.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="menu.cpp" />
+    <ClCompile Include="ResidentArray.cpp" />
+    <ClCompile Include="tableDisplay.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="record.hpp" />
-    <ClInclude Include="recordArray.hpp" />
-    <ClInclude Include="recordLinkedList.hpp" />
+    <ClInclude Include="dataStore.hpp" />
+    <ClInclude Include="linearSearch.hpp" />
+    <ClInclude Include="LinkedList.hpp" />
+    <ClInclude Include="menu.hpp" />
+    <ClInclude Include="Resident.hpp" />
+    <ClInclude Include="ResidentArray.hpp" />
+    <ClInclude Include="ResidentLinkedList.hpp" />
+    <ClInclude Include="tableDisplay.hpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="dataset1-cityA.csv" />
