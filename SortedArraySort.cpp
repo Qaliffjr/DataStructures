@@ -117,7 +117,7 @@ int lowerBoundFirstAgeAtLeast(const RecordArray& records, int minAge) {
     return lo;
 }
 
-int lowerBoundFirstDistanceGreaterThan(const RecordArray& records, int minDistanceExclusive) {
+int lowerBoundFirstDistanceGreaterThan(const RecordArray& records, double minDistanceExclusive) {
     const int n = records.size;
     if (n <= 0 || records.arr == nullptr) {
         return 0;
