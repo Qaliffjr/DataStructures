@@ -1,6 +1,7 @@
 #define _HAS_STD_BYTE 0
 
 #include "ResidentArray.hpp"
+
 #include "ResidentArrayUtils.hpp"
 #include "tableDisplay.hpp"
 #include <chrono>
@@ -256,15 +257,28 @@ ResidentArray searchByEmission(const ResidentArray& input, double threshold) {
 
 void printResidentArray(const ResidentArray& arr) {
     const int n = arr.size;
-    for (int i = 0; i < 10; i++) {
-        const Resident& r = arr.arr[i];
-        cout << left
-            << setw(4) << i << "  "
-            << setw(8) << r.ID
-            << setw(6) << r.Age
-            << setw(16) << r.modeOfTransport
-            << setw(14) << fixed << setprecision(1) << r.dailyDistance
-            << setw(20) << fixed << setprecision(2) << r.monthlyCarbonEmission
+    if (arr.size != 0) {
+        std::cout << std::left << std::setfill(' ')
+            << std::setw(4) << "No."
+            << std::setw(8) << "ID"
+            << std::setw(6) << "Age"
+            << std::setw(20) << "Mode of Transport"
+            << std::setw(20) << "Daily Distance"
+            << std::setw(30) << "Monthly Carbon Emission"
             << "\n";
+        for (int i = 0; i < n; i++) {
+            const Resident& r = arr.arr[i];
+            cout << left
+                << setw(4) << i + 1 << "  "
+                << setw(8) << r.ID
+                << setw(6) << r.Age
+                << setw(20) << r.modeOfTransport
+                << setw(20) << fixed << setprecision(1) << r.dailyDistance
+                << setw(30) << fixed << setprecision(2) << r.monthlyCarbonEmission
+                << "\n";
+        }
+    }
+    else {
+        std::cout << "No Residents Found!\n\n";
     }
 }

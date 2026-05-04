@@ -1,9 +1,12 @@
 #include "menu.hpp"
+
 #include "ResidentArray.hpp"
 #include "ResidentLinkedList.hpp"
 #include "ResidentArrayUtils.hpp"
+#include "SortedArraySort.hpp"
 #include "tableDisplay.hpp"
 #include "dataStore.hpp"
+
 #include <iostream>
 #include <iomanip>
 #include <chrono>
@@ -105,6 +108,37 @@ int getMaxDistance(int group) {
 //==================================================================
 //==================================================================
 //==================================================================
+//Run Sortings
+ResidentArray runSortArray(int dataSet, int sortBy) {
+    ResidentArray arr = copyResidentArray(getArrayByDataset(dataSet));
+    insertionSortArray(arr, sortBy);
+    return arr;
+}
+
+ResidentLinkedList runSortLis(int dataSet, int sortBy) {
+	//Recreate the Copy Mechanism as LinkedList to balance time execution and memory usage
+    ResidentLinkedList copy = copyResidentLinkedList(getListByDataset(dataSet));
+
+    //New List
+    ResidentLinkedList sortedList;
+    sortedList.head = nullptr;
+
+    Node* current = copy.head;
+
+    while (current != nullptr) {
+        Node* newNode = new Node;
+        newNode->data = current->data;
+        newNode->next = nullptr;
+
+        sortedInsert(sortedList.head, newNode, sortBy);
+
+        current = current->next;
+    }
+
+    //Returns sorted result
+    return sortedList;
+}
+
 //Run Searches
 //===== Age Group =====
 ResidentArray runSearchAgeUnsortedArray(int dataSet, int group) {
@@ -114,7 +148,7 @@ ResidentArray runSearchAgeUnsortedArray(int dataSet, int group) {
 //ResidentArray runSearchAgeSortedArray(int dataSet, int group) {
 //    int min = getMinAge(group);
 //    int max = getMaxAge(group);
-//    //Emal
+//	return binarySearchByAge(getArrayByDataset(dataSet), min, max);
 //}
 
 ResidentLinkedList runSearchAgeUnsortedList(int dataSet, int group) {
@@ -123,9 +157,11 @@ ResidentLinkedList runSearchAgeUnsortedList(int dataSet, int group) {
     return linearSearchListByAge(getListByDataset(dataSet), min, max);
 }
 
-//ResidentLinkedList runSearchAgeSortedList(int dataset, int group) {
-//    //Gaku
-//}
+ResidentLinkedList runSearchAgeSortedList(int dataset, int group) {
+    int min = getMinAge(group);
+    int max = getMaxAge(group);
+	return searchListByAge(getListByDataset(dataset).head, min, max);
+}
 
 //===== Transport Mode =====
 ResidentArray runSearchTransportUnsortedArray(int dataSet, const string& mode) {
@@ -140,9 +176,9 @@ ResidentLinkedList runSearchTransportUnsortedList(int dataSet, const string& mod
     return linearSearchListByTransport(getListByDataset(dataSet), mode);
 }
 
-//ResidentLinkedList runSearchTransportSortedList(int dataSet, const string& mode) {
-//    //Gaku
-//}
+ResidentLinkedList runSearchTransportSortedList(int dataSet, const string& mode) {
+    return searchListByTransport(getListByDataset(dataSet).head, mode);
+}
 
 //Distance Traveled
 ResidentArray runSearchDistanceUnsortedArray(int dataSet, int group) {
@@ -160,9 +196,11 @@ ResidentLinkedList runSearchDistanceUnsortedList(int dataSet, int group) {
     return linearSearchListByDailyDistance(getListByDataset(dataSet), min, max);
 }
 
-//ResidentLinkedList runSearchDistanceSortedList(int dataSet, int group) {
-//    //Gaku
-//}
+ResidentLinkedList runSearchDistanceSortedList(int dataSet, int group) {
+    int min = getMinDistance(group);
+    int max = getMaxDistance(group);
+    return searchListByDistance(getListByDataset(dataSet).head, min, max);
+}
 
 //Monthly Emission
 ResidentArray runSearchEmissionUnsortedArray(int dataSet, double threshold) {
@@ -177,9 +215,9 @@ ResidentLinkedList runSearchEmissionUnsortedList(int dataSet, double threshold) 
     return linearSearchListByEmission(getListByDataset(dataSet), threshold);
 }
 
-//ResidentLinkedList runSearchEmissionSortedList(int dataSet, double threshold) {
-//    //Gaku
-//}
+ResidentLinkedList runSearchEmissionSortedList(int dataSet, double threshold) {
+    return searchListByEmission(getListByDataset(dataSet).head, threshold);
+}
 
 
 //==================================================================
@@ -303,6 +341,99 @@ int selectSorted() {
 //==================================================================
 //Level 2 Menus
 
+void SortingCriteriaMenu(int container, int dataSet, bool display) {
+    int nav;
+    cout << "Please select a sorting criteria from the menu below:\n"
+        << "1. Sort by Age\n"
+        << "2. Sort by Daily Distance Traveled\n"
+        << "3. Sort by Monthly Carbon Emission\n"
+        << "0. Exit\n"
+        << setfill('-') << setw(60) << "-" << "\n"
+        << "Enter your choice: ";
+    getInput(nav);
+    if (nav == 0) {
+        cout << "Returning to previous page.\n";
+        return;
+    }
+    auto start = chrono::high_resolution_clock::now();
+    auto end = chrono::high_resolution_clock::now();
+    chrono::duration<double, milli> elapsed;
+	if (!display) {
+        //Prepare Table
+        const int COLS = 3;
+
+        std::string headers[COLS] = {
+            "Data Structure",
+            "Time Used",
+            "Memory Used"
+        };
+
+        int widths[COLS] = {
+        50,  // Algorithm Name
+        30,  // Time Used (in ms)
+        30,  // Memory Used (in bytes)
+        };
+
+        std::string rows[5][10];
+        int rowCount = 2;
+        rows[0][0] = "Insertion Sort - Array";
+        rows[1][0] = "Insertion Sort - LinkedList";
+
+        //SORT ARRAY
+        start = chrono::high_resolution_clock::now();
+        ResidentArray sortedArr = runSortArray(dataSet, nav);
+        end = chrono::high_resolution_clock::now();
+        elapsed = end - start;
+        //Count Memory
+        freeResidentArray(sortedArr);
+
+        rows[0][1] = to_string(elapsed.count()) + " ms";
+        // rows[0][2] = Memory
+
+        //SORT LINKED LIST
+        start = chrono::high_resolution_clock::now();
+        ResidentLinkedList sortedList = runSortLis(dataSet, nav);
+        end = chrono::high_resolution_clock::now();
+        elapsed = end - start;
+        //Count Memory
+        freeResidentLinkedList(sortedList);
+        rows[1][1] = to_string(elapsed.count()) + " ms";
+        // rows[1][2] = Memory
+        switch (nav) {
+        case 1: {
+            printSubtitle("Sorting Experiment Results - Based on Age Group");
+            break;
+        }
+        case 2: {
+            printSubtitle("Sorting Experiment Results - Based on Daily Distance Traveled");
+            break;
+        }
+        case 3: {
+            printSubtitle("Sorting Experiment Results - Based on Monthly Carbon Emission");
+            break;
+        }
+        }
+		printTable(headers, COLS, rows, rowCount, widths);
+
+        return;
+    }
+    else {
+        if (container == 1) {
+            ResidentArray sortedArr = runSortArray(dataSet, nav);
+            printResidentArray(sortedArr);
+            freeResidentArray(sortedArr);
+        }
+        else {
+            ResidentLinkedList sortedList = runSortLis(dataSet, nav);
+            printResidentLinkedList(sortedList);
+            freeResidentLinkedList(sortedList);
+        }
+        end = chrono::high_resolution_clock::now();
+        elapsed = end - start;
+        displayProcessTime(elapsed);
+
+    }
+}
 
 void SearchingCriteriaMenu(int container, int dataSet, bool showResult, bool sorted) {
 
@@ -347,7 +478,7 @@ void SearchingCriteriaMenu(int container, int dataSet, bool showResult, bool sor
                     }
                     else {
                         start = chrono::high_resolution_clock::now();
-                        //listResult = runSearchAgeSortedList(dataSet, group);
+                        listResult = runSearchAgeSortedList(dataSet, group);
                     }
                 }
                 else {
@@ -381,7 +512,7 @@ void SearchingCriteriaMenu(int container, int dataSet, bool showResult, bool sor
                     }
                     else {
                         start = chrono::high_resolution_clock::now();
-                        //listResult = runSearchTransportSortedList(dataSet, modeStr);
+                        listResult = runSearchTransportSortedList(dataSet, modeStr);
                     }
                 }
                 else {
@@ -408,7 +539,7 @@ void SearchingCriteriaMenu(int container, int dataSet, bool showResult, bool sor
                         //arrResult = runSearchDistanceSortedArray(dataSet, group);
                     }
                     else {
-                        //listResult = runSearchDistanceSortedList(dataSet, group);
+                        listResult = runSearchDistanceSortedList(dataSet, group);
                     }
 
                 }
@@ -438,7 +569,7 @@ void SearchingCriteriaMenu(int container, int dataSet, bool showResult, bool sor
                     }
                     else {
                         start = chrono::high_resolution_clock::now();
-                        //listResult = runSearchEmissionSortedList(dataSet, threshold); // linear
+                        listResult = runSearchEmissionSortedList(dataSet, threshold); // linear
                     }
                 }
                 else {
@@ -510,7 +641,7 @@ void SearchingCriteriaMenu(int container, int dataSet, bool showResult, bool sor
             end = chrono::high_resolution_clock::now();
             elapsed = end - start;
             //Count Memory
-            rows[0][1] = to_string(elapsed.count());
+            rows[0][1] = to_string(elapsed.count()) + " ms";
             // rows[0][2] = Memory
 
             //RUN SORTED ARRAY
@@ -519,7 +650,7 @@ void SearchingCriteriaMenu(int container, int dataSet, bool showResult, bool sor
             end = chrono::high_resolution_clock::now();
             elapsed = end - start;
             //Count memory
-            rows[1][1] = to_string(elapsed.count());
+            rows[1][1] = to_string(elapsed.count()) + " ms";
             // rows[1][2] = Memory
 
 
@@ -529,16 +660,16 @@ void SearchingCriteriaMenu(int container, int dataSet, bool showResult, bool sor
             end = chrono::high_resolution_clock::now();
             elapsed = end - start;
             //Count Memory
-            rows[2][1] = to_string(elapsed.count());
+            rows[2][1] = to_string(elapsed.count()) + " ms";
             // rows[2][2] = Memory
 
             //RUN SORTED LINKED LIST
             start = chrono::high_resolution_clock::now();
-            //listResult = runSearchAgeSortedList(dataSet, group);
+            listResult = runSearchAgeSortedList(dataSet, group);
             end = chrono::high_resolution_clock::now();
             elapsed = end - start;
             //Count memory
-            rows[3][1] = to_string(elapsed.count());
+            rows[3][1] = to_string(elapsed.count()) + " ms";
             // rows[3][2] = Memory
 
 
@@ -566,7 +697,7 @@ void SearchingCriteriaMenu(int container, int dataSet, bool showResult, bool sor
             end = chrono::high_resolution_clock::now();
             elapsed = end - start;
             //Count Memory
-            rows[0][1] = to_string(elapsed.count());
+            rows[0][1] = to_string(elapsed.count()) + " ms";
             // rows[0][2] = Memory
 
             //RUN SORTED ARRAY
@@ -575,7 +706,7 @@ void SearchingCriteriaMenu(int container, int dataSet, bool showResult, bool sor
             end = chrono::high_resolution_clock::now();
             elapsed = end - start;
             //Count memory
-            rows[1][1] = to_string(elapsed.count());
+            rows[1][1] = to_string(elapsed.count()) + " ms";
             // rows[1][2] = Memory
 
 
@@ -585,16 +716,16 @@ void SearchingCriteriaMenu(int container, int dataSet, bool showResult, bool sor
             end = chrono::high_resolution_clock::now();
             elapsed = end - start;
             //Count Memory
-            rows[2][1] = to_string(elapsed.count());
+            rows[2][1] = to_string(elapsed.count()) + " ms";
             // rows[2][2] = Memory
 
             //RUN SORTED LINKED LIST
             start = chrono::high_resolution_clock::now();
-            //listResult = runSearchTransportSortedList(dataSet, modeStr);
+            listResult = runSearchTransportSortedList(dataSet, modeStr);
             end = chrono::high_resolution_clock::now();
             elapsed = end - start;
             //Count memory
-            rows[3][1] = to_string(elapsed.count());
+            rows[3][1] = to_string(elapsed.count()) + " ms";
             // rows[3][2] = Memory
 
 
@@ -614,7 +745,7 @@ void SearchingCriteriaMenu(int container, int dataSet, bool showResult, bool sor
             end = chrono::high_resolution_clock::now();
             elapsed = end - start;
             //Count Memory
-            rows[0][1] = to_string(elapsed.count());
+            rows[0][1] = to_string(elapsed.count()) + " ms";
             // rows[0][2] = Memory
 
             //RUN SORTED ARRAY
@@ -623,7 +754,7 @@ void SearchingCriteriaMenu(int container, int dataSet, bool showResult, bool sor
             end = chrono::high_resolution_clock::now();
             elapsed = end - start;
             //Count memory
-            rows[1][1] = to_string(elapsed.count());
+            rows[1][1] = to_string(elapsed.count()) + " ms";
             // rows[1][2] = Memory
 
 
@@ -633,16 +764,16 @@ void SearchingCriteriaMenu(int container, int dataSet, bool showResult, bool sor
             end = chrono::high_resolution_clock::now();
             elapsed = end - start;
             //Count Memory
-            rows[2][1] = to_string(elapsed.count());
+            rows[2][1] = to_string(elapsed.count()) + " ms";
             // rows[2][2] = Memory
 
             //RUN SORTED LINKED LIST
             start = chrono::high_resolution_clock::now();
-            //listResult = runSearchDistanceSortedList(dataSet, group);
+            listResult = runSearchDistanceSortedList(dataSet, group);
             end = chrono::high_resolution_clock::now();
             elapsed = end - start;
             //Count memory
-            rows[3][1] = to_string(elapsed.count());
+            rows[3][1] = to_string(elapsed.count()) + " ms";
             // rows[3][2] = Memory
 
             string text;
@@ -669,7 +800,7 @@ void SearchingCriteriaMenu(int container, int dataSet, bool showResult, bool sor
             end = chrono::high_resolution_clock::now();
             elapsed = end - start;
             //Count Memory
-            rows[0][1] = to_string(elapsed.count());
+            rows[0][1] = to_string(elapsed.count()) + " ms";
             // rows[0][2] = Memory
 
             //RUN SORTED ARRAY
@@ -678,7 +809,7 @@ void SearchingCriteriaMenu(int container, int dataSet, bool showResult, bool sor
             end = chrono::high_resolution_clock::now();
             elapsed = end - start;
             //Count memory
-            rows[1][1] = to_string(elapsed.count());
+            rows[1][1] = to_string(elapsed.count()) + " ms";
             // rows[1][2] = Memory
 
 
@@ -688,16 +819,16 @@ void SearchingCriteriaMenu(int container, int dataSet, bool showResult, bool sor
             end = chrono::high_resolution_clock::now();
             elapsed = end - start;
             //Count Memory
-            rows[2][1] = to_string(elapsed.count());
+            rows[2][1] = to_string(elapsed.count()) + " ms";
             // rows[2][2] = Memory
 
             //RUN SORTED LINKED LIST
             start = chrono::high_resolution_clock::now();
-            //listResult = runSearchEmissionSortedList(dataSet, threshold);
+            listResult = runSearchEmissionSortedList(dataSet, threshold);
             end = chrono::high_resolution_clock::now();
             elapsed = end - start;
             //Count memory
-            rows[3][1] = to_string(elapsed.count());
+            rows[3][1] = to_string(elapsed.count()) + " ms";
             // rows[3][2] = Memory
 
 
@@ -730,18 +861,18 @@ void EmissionMenu() {
         getInput(nav);
         switch (nav) {
         case 1:
-			analyzeEmissionByDataset(list1, list2, list3);
             // Call Function to Compare Carbon Emissions by Dataset & Display Results
+			analyzeEmissionByDataset(list1, list2, list3);
             waitToReturn();
             return;
         case 2:
-            analyzeEmissionByMode(list1, list2, list3);
             // Call Function to Compare Carbon Emissions by Mode of Transport & Display Results
+            analyzeEmissionByMode(list1, list2, list3);
             waitToReturn();
             return;
+            // Call Function to Compare Carbon Emissions by Age Group & Display Results
         case 3:
             analyzeEmissionByAgeGroup(list1, list2, list3);
-            // Call Function to Compare Carbon Emissions by Age Group & Display Results
             waitToReturn();
             return;
         case 0:
@@ -773,60 +904,20 @@ void SortingMenu(bool display) {
         }
 
         //Select Data Set for Sorting Experiment
-        int dataSet;
-        cout << "\nPlease select the dataset to sort:\n"
-            << "1. DataSet 1\n"
-            << "2. DataSet 2\n"
-            << "3. DataSet 3\n"
-            << "0. Exit\n"
-            << setfill('=') << setw(60) << "=" << "\n"
-            << "Enter your choice: ";
-        cin >> dataSet;
+        int dataSet = selectDataSet();
 
         if (dataSet == 0) {
             cout << "Returning to Menu...\n";
             return;
         }
-        else {
-            switch (dataSet) {
-            case 1:
-                if (nav == 1) {
-                    // Call Sorting Experiment Function for Array with DataSet 1
-                    waitToReturn();
-                }
-                else if (nav == 2) {
-                    // Call Sorting Experiment Function for Linked List with DataSet 1
-                    waitToReturn();
-                }
-                return;
-            case 2:
-                if (nav == 1) {
-                    // Call Sorting Experiment Function for Array with DataSet 1
-                    waitToReturn();
-                }
-                else if (nav == 2) {
-                    // Call Sorting Experiment Function for Linked List with DataSet 1
-                    waitToReturn();
-                }
-                return;
-            case 3:
-                if (nav == 1) {
-                    // Call Sorting Experiment Function for Array with DataSet 1
-                    waitToReturn();
-                }
-                else if (nav == 2) {
-                    // Call Sorting Experiment Function for Linked List with DataSet 1
-					waitToReturn();
-                }
-                return;
-            default:
-                cout << "Invalid choice. Please select a valid option from the menu.\n";
-                return;
-            }
+		else if (dataSet < 0 || dataSet > 4) {
+            cout << "Invalid choice. Please select a valid option from the menu.\n";
+            continue;
         }
-
-
-
+        else {
+            SortingCriteriaMenu(nav, dataSet, display);
+            return;
+        }
     }
 }
 
@@ -870,7 +961,8 @@ void ResultMenu() {
         getInput(nav);
         switch (nav) {
         case 1:
-			SortingMenu(false);
+            //Ignores Input, imporantce on display or not (int, int, false)
+			SortingCriteriaMenu(0, 0, false);
             waitToReturn();
             break;
         case 2:
@@ -922,6 +1014,7 @@ void MainMenu() {
             break;
         case 3:
             SortingMenu(true);
+            waitToReturn();
             break;
         case 4:
             SearchingMenu(true);

@@ -1,4 +1,5 @@
 #include "ResidentArrayUtils.hpp"
+
 #include "CSVLoader.hpp"
 
 #include <iostream>
@@ -45,6 +46,33 @@ void freeResidentLinkedList(ResidentLinkedList& list) {
 
     list.head = nullptr;
     list.tail = nullptr;
+}
+
+ResidentLinkedList copyResidentLinkedList(const ResidentLinkedList& original) {
+    ResidentLinkedList newList;
+    newList.head = nullptr;
+
+    Node* current = original.head;
+    Node* tail = nullptr;
+
+    while (current != nullptr) {
+        Node* newNode = new Node;
+        newNode->data = current->data;
+        newNode->next = nullptr;
+
+        if (newList.head == nullptr) {
+            newList.head = newNode;
+            tail = newNode;
+        }
+        else {
+            tail->next = newNode;
+            tail = newNode;
+        }
+
+        current = current->next;
+    }
+
+    return newList;
 }
 
 bool loadDataset(

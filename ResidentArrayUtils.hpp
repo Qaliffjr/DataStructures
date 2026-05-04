@@ -11,6 +11,7 @@ ResidentArray copyResidentArray(const ResidentArray& source);
 
 void initResidentLinkedList(ResidentLinkedList& list);
 void freeResidentLinkedList(ResidentLinkedList& list);
+ResidentLinkedList copyResidentLinkedList(const ResidentLinkedList& source);
 
 bool loadDataset(
     const std::string& filename,

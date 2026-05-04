@@ -1,5 +1,7 @@
 #include "SortedArraySort.hpp"
+
 #include "ResidentArray.hpp"
+
 #include <iostream>
 
 bool isGreater(const Resident& a, const Resident& b, int sortBy) {
@@ -230,3 +232,5 @@ void binarySearchByEmission(const ResidentArray& residents, double emissionThres
     }
     std::cout << "Total with monthlyCarbonEmission > " << emissionThreshold << ": " << count << '\n';
 }
+
+

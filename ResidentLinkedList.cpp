@@ -1,5 +1,7 @@
 #include "ResidentLinkedList.hpp"
+
 #include "tableDisplay.hpp"
+
 #include <chrono>
 #include <iostream>
 
@@ -20,17 +22,27 @@ void insertBack(ResidentLinkedList& list, const Resident& data) {
 
 void printResidentLinkedList(const ResidentLinkedList& list) {
     Node* current = list.head;
-    int index = 0;
+    int index = 1;
+
+    std::cout << std::left << std::setfill(' ')
+        << std::setw(4) << "No."
+        << std::setw(8) << "ID"
+        << std::setw(6) << "Age"
+        << std::setw(20) << "Mode of Transport"
+        << std::setw(20) << "Daily Distance"
+        << std::setw(30) << "Monthly Carbon Emission"
+        << "\n";
     while (current != nullptr) {
         const Resident& r = current->data;
-        std::cout << std::left
-            << std::setw(4) << index++ << "  "
+		std::cout << std::left << std::setfill(' ')
+            << std::setw(4) << index << "  "
             << std::setw(8) << r.ID
             << std::setw(6) << r.Age
-            << std::setw(16) << r.modeOfTransport
-            << std::setw(14) << std::fixed << std::setprecision(1) << r.dailyDistance
-            << std::setw(20) << std::fixed << std::setprecision(2) << r.monthlyCarbonEmission
+            << std::setw(20) << r.modeOfTransport
+            << std::setw(20) << std::fixed << std::setprecision(1) << r.dailyDistance
+            << std::setw(30) << std::fixed << std::setprecision(2) << r.monthlyCarbonEmission
             << "\n";
+        index++;
         current = current->next;
     }
 }

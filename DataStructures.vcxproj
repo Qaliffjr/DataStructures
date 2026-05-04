@@ -127,7 +127,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="ArrayMain.cpp" />
     <ClCompile Include="CSVLoader.cpp" />
     <ClCompile Include="dataStore.cpp" />
     <ClCompile Include="ResidentArray.cpp" />
@@ -135,6 +134,7 @@
     <ClCompile Include="ResidentLinkedList.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="menu.cpp" />
+    <ClCompile Include="SearchSortedList.cpp" />
     <ClCompile Include="SortedArraySort.cpp" />
     <ClCompile Include="tableDisplay.cpp" />
   </ItemGroup>
@@ -146,6 +146,7 @@
     <ClInclude Include="Resident.hpp" />
     <ClInclude Include="ResidentArray.hpp" />
     <ClInclude Include="ResidentLinkedList.hpp" />
+    <ClInclude Include="SearchSortedList.hpp" />
     <ClInclude Include="SortedArraySort.hpp" />
     <ClInclude Include="tableDisplay.hpp" />
   </ItemGroup>

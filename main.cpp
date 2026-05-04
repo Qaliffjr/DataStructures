@@ -1,7 +1,9 @@
-#include <iostream> 
+#include "DataStore.hpp"
+
 #include "CSVLoader.hpp" 
 #include "menu.hpp" 
-#include "DataStore.hpp"
+
+#include <iostream> 
 
 using namespace std;
 
@@ -35,6 +37,9 @@ void initData() {
     loadCSV(file1, arr1, list1);
     loadCSV(file2, arr2, list2);
     loadCSV(file3, arr3, list3);
+	arrCombined = combineArrays(arr1, arr2, arr3);
+	listCombined = combineLists(list1, list2, list3);
+
 }
 
 int main() {
